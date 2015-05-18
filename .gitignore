@@ -1,0 +1,9 @@
+# Ignore everything (only add folders once they've been worked on)
+*
+# Don't ignore me though!
+!.gitignore
+# Don't ignore ruby and go folders since I'm working on those problems.
+!ruby/*/*
+!go/*/*
+# Include subdirs in the above exclusions
+!*/
