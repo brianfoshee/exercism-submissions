@@ -1,12 +1,10 @@
 class Phrase
-  attr_reader :phrase
-
   def initialize(phrase)
     # set @phrase to an array
     # Change all commas to a space
-    # remove all punctuation except words, digits, spaces, apostrophes
+    # remove all punctuation except letters, digits, spaces, apostrophes
     @phrase = phrase.gsub(/,/, ' ')
-      .gsub(/[^\w\d\s']/, '')
+      .gsub(/[^a-zA-Z\d\s']/, '')
       .downcase.split
   end
 

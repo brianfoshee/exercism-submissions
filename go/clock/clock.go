@@ -5,50 +5,41 @@ import (
 	"math"
 )
 
-type clock struct {
-	h, m int
+const TestVersion = 2
+
+type time struct {
+	hour, minute int
 }
 
-func (c clock) String() string {
-	return fmt.Sprintf("%2.2d:%2.2d", c.h, c.m)
-}
-
-// m is assumned to come in as a negative number
-func (c clock) Subtract(m int) clock {
-	diff := math.Abs(float64(m) / 60.0)
-	hr := float64(c.h) - math.Ceil(diff)
-	if hr < 0 {
-		hr = 24 + hr
+func Time(h, m int) time {
+	if m >= 60 {
+		h += int(m / 60)
+		m %= 60
 	}
-	min := c.m + m
-	if min < 0 {
-		min = 60 + (min % 60)
-	}
-
-	c.h = int(hr)
-	c.m = int(min)
-
-	return c
-}
-
-func (c clock) Add(m int) clock {
 	if m < 0 {
-		return c.Subtract(m)
-	} else {
-		c.m += m
-		if c.m > 59 {
-			c.m = c.m % 60
-		}
-		diff := math.Abs(float64(m) / 60.0)
-		hr := float64(c.h) + math.Floor(diff)
-		c.h = int(hr)
-		if c.h > 23 {
-			c.h = c.h % 24
-		}
+		m *= -1
+		h -= int(math.Ceil(float64(m) / 60))
+		m = 60 - (m % 60)
 	}
-	return c
+	if h < 0 {
+		h = 24 - ((h * -1) % 24)
+	}
+	if h >= 24 {
+		h -= 24
+	}
+	return time{hour: h, minute: m}
 }
 
-func New(h, m int) clock {
-	return clock{h: h, m: m}
+func (t time) Add(m int) time {
+	nm := t.minute
+	if m >= 0 {
+		nm += m
+	} else {
+		nm -= m * -1
+	}
+	return Time(t.hour, nm)
+}
+
+func (t time) String() string {
+	return fmt.Sprintf("%.2v:%.2v", t.hour, t.minute)
 }

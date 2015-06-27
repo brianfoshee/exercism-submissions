@@ -1,65 +1,69 @@
 package clock
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
 
-var newTests = []struct {
-	h, m int
-	disp string
-}{
-	{8, 0, "08:00"},
-	{9, 0, "09:00"},
-	{11, 9, "11:09"},
-}
+// Clock type API:
+//
+// Time(hour, minute int) Clock    // a "constructor"
+// (Clock) String() string         // a "stringer"
+// (Clock) Add(minutes int) Clock
+//
+// Add should also handle subtraction by accepting negative values.
+// To satisfy the readme requirement about clocks being equal, values of
+// your Clock type need to work with the == operator.
+//
+// It might help to study the time.Time type in the standard library
+// (https://golang.org/pkg/time/#Time) as a model.  See how constructors there
+// (Date and Now) return Time values rather than pointers.  Note also how
+// most time.Time methods have value receivers rather that pointer recievers.
+// For more background on this read
+// https://github.com/golang/go/wiki/CodeReviewComments#receiver-type.
 
-var addTests = []struct {
-	h, m, a int
-	disp    string
-}{
-	{10, 0, 3, "10:03"},   // simple
-	{10, 0, 61, "11:01"},  // add > 1 hour
-	{23, 30, 60, "00:30"}, // add across midnight
-	{10, 0, -90, "08:30"}, // subtract > 1 hour
-	{0, 30, -60, "23:30"}, // subtract across midnight
+const testVersion = 2
 
-	{0, 45, 40, "01:25"},   // hour carry
-	{1, 25, -40, "00:45"},  // hour borrow
-	{23, 45, 40, "00:25"},  // carry across midnight
-	{0, 25, -40, "23:45"},  // borrow across midnight
-	{0, 0, 160, "02:40"},   // add > 2 hrs
-	{0, 45, 160, "03:25"},  // add > 2 hrs with carry
-	{0, 0, -160, "21:20"},  // subtract > 2 hrs
-	{6, 15, -160, "03:35"}, // subtract > 2 hrs with borrow
+// Retired testVersions
+// (none) 79937f6d58e25ebafe12d1cb4a9f88f4de70cfd6
+// 1      8d0cb8b617be2e36b2ca5ad2034e5f80f2372924
 
-	{0, 160, 0, "02:40"},  // initial minutes roll over
-	{25, 0, 0, "01:00"},   // initial hour rolls over
-	{25, 160, 0, "03:40"}, // both rollover
-	{0, -160, 0, "21:20"}, // same cases, negative
-	{-25, 0, 0, "23:00"},
-	{-25, -160, 0, "20:20"},
-}
-
-func TestClock(t *testing.T) {
-	for _, n := range newTests {
-		if c := New(n.h, n.m); c.String() != n.disp {
-			t.Fatalf("New(%d, %d) = %q, want %q", n.h, n.m, c, n.disp)
+func TestCreateClock(t *testing.T) {
+	if TestVersion != testVersion {
+		t.Fatalf("Found TestVersion = %v, want %v", TestVersion, testVersion)
+	}
+	for _, n := range timeTests {
+		if got := Time(n.h, n.m); got.String() != n.want {
+			t.Fatalf("Time(%d, %d) = %q, want %q", n.h, n.m, got, n.want)
 		}
 	}
+	t.Log(len(timeTests), "test cases")
+}
+
+func TestAddMinutes(t *testing.T) {
 	for _, a := range addTests {
-		if c := New(a.h, a.m).Add(a.a); c.String() != a.disp {
-			t.Fatalf("New(%d, %d).Add(%d) = %q, want %q", a.h, a.m, a.a, c, a.disp)
+		if got := Time(a.h, a.m).Add(a.a); got.String() != a.want {
+			t.Fatalf("Time(%d, %d).Add(%d) = %q, want %q",
+				a.h, a.m, a.a, got, a.want)
 		}
 	}
-	clock0 := New(15, 37)
-	clock1 := New(15, 37)
-	clock2 := New(15, 36)
-	clock3 := New(14, 37)
-	if clock0 != clock1 {
-		t.Fatal(clock0, "!=", clock1, "want ==")
+	t.Log(len(addTests), "test cases")
+}
+
+func TestCompareClocks(t *testing.T) {
+	for _, e := range eqTests {
+		clock1 := Time(e.c1.h, e.c1.m)
+		clock2 := Time(e.c2.h, e.c2.m)
+		got := clock1 == clock2
+		if got != e.want {
+			t.Log("Clock1:", clock1)
+			t.Log("Clock2:", clock2)
+			t.Logf("Clock1 == Clock2 is %t, want %t", got, e.want)
+			if reflect.DeepEqual(clock1, clock2) {
+				t.Log("(Hint: see comments in clock_test.go.)")
+			}
+			t.FailNow()
+		}
 	}
-	if clock2 == clock1 {
-		t.Fatal(clock2, "==", clock1, "want !=")
-	}
-	if clock3 == clock1 {
-		t.Fatal(clock3, "==", clock1, "want !=")
-	}
+	t.Log(len(eqTests), "test cases")
 }
