@@ -1,4 +1,5 @@
 require 'minitest/autorun'
+require 'minitest/pride'
 require_relative 'raindrops'
 
 class RaindropsTest < Minitest::Test
