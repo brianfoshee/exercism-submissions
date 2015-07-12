@@ -5,5 +5,7 @@
 # Don't ignore the root README
 !README.md
 # Don't ignore ruby and go folders since I'm working on those problems.
-!*/ruby/*/*
-!*/go/*/*
+!go/
+!ruby/
+!go/**
+!ruby/**
