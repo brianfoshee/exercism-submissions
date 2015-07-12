@@ -1,1 +1,4 @@
 package foodchain
+
+func main() {
+}
