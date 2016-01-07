@@ -12,7 +12,7 @@ class Raindrops
     out == "" ? n.to_s : out
   end
 
-  private
+  #private
 
   def self.prime_factors(n)
     Prime.prime_division(n)
@@ -21,20 +21,5 @@ class Raindrops
       .uniq
       .map { |f| RULES[f] }
       .join
-  end
-
-  # Not using this, but an algo for determining primes
-  # https://en.wikipedia.org/wiki/Primality_test
-  def is_prime?(n)
-    return n > 1 if n <=3
-    return false if n % 2 == 0 || n % 3 == 0
-
-    i = 5
-    while i*i <= n
-      return false if (n % i == 0 || n % (i + 2) == 0)
-      i += 6
-    end
-
-    true
   end
 end

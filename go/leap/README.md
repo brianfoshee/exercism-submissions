@@ -2,7 +2,7 @@
 
 Write a program that will take a year and report if it is a leap year.
 
-The tricky thing here is that a leap year occurs:
+The tricky thing here is that a leap year in the Gregorian calendar occurs:
 
 ```plain
 on every year that is evenly divisible by 4
@@ -23,6 +23,15 @@ phenomenon, go watch [this youtube video][video].
 
 [video]: http://www.youtube.com/watch?v=xX96xng7sAE
 
+To run the tests simply run the command `go test` in the exercise directory.
+
+If the test suite contains benchmarks, you can run these with the `-bench`
+flag:
+
+    go test -bench .
+
+For more detailed info about the Go track see the [help
+page](http://help.exercism.io/getting-started-with-go.html).
 
 ## Source
 

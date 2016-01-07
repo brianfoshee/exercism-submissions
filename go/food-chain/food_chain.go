@@ -1,4 +1,0 @@
-package foodchain
-
-func main() {
-}
